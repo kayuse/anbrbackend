@@ -1,11 +1,22 @@
 {
   "extends": "@adonisjs/tsconfig/tsconfig.app.json",
   "compilerOptions": {
-    "resolveJsonModule": true,
     "types": ["@adonisjs/core"],
     "rootDir": "./",
     "outDir": "./build"
   },
-  "include": ["./**/*.ts"],
-  "exclude": ["node_modules", "build"]
+  // "include": ["./**/*.ts"],
+  // "exclude": ["node_modules", "build"]
 }
+
+
+// {
+//   "extends": "@adonisjs/tsconfig/tsconfig.app.json",
+//   "compilerOptions": {
+//     "rootDir": "./",
+//     "outDir": "./build",
+//     "paths": { 
+//       "#jobs/*" : ["./app/jobs/*.js"]
+//     }
+//   },
+// }
