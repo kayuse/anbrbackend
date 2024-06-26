@@ -1,7 +1,13 @@
 {
   "extends": "@adonisjs/tsconfig/tsconfig.app.json",
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
+    "types": ["@adonisjs/core"],
     "rootDir": "./",
-    "outDir": "./build",
+    "outDir": "./build"
   },
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules", "build"]
 }

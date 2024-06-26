@@ -1,16 +1,23 @@
 import { inject } from "@adonisjs/core";
 import { RegistrationDocument } from "../request/registrationRequest.js";
-import Registration from "#models/registration";
 import { ApiResponse } from "../request/api_response.js";
 import mail from '@adonisjs/mail/services/main'
-import BiblestudyGroup from "#models/biblestudy_group";
+// import BiblestudyGroup from "#models/biblestudy_group";
+import { PrismaClient } from '@prisma/client'
 
 
 @inject()
 export default class RegistrationService {
+    protected prisma: PrismaClient
+    constructor() {
+        this.prisma = new PrismaClient()
+    }
     // const errors = []
     async process(data: RegistrationDocument): Promise<ApiResponse> {
-        const registrations = await Registration.findManyBy({ email: data.email, mobile: data.mobile })
+        const registrations = await this.prisma.registration.findMany({
+            where : {email: data.email, mobile: data.mobile}
+        })
+        // const registrations = await Registration.findManyBy({ email: data.email, mobile: data.mobile })
         if (registrations.length > 0) {
             return {
                 data: null,
@@ -18,39 +25,51 @@ export default class RegistrationService {
                 message: 'This user already exists'
             }
         }
-        const bibleStudyGroup = await BiblestudyGroup.query().orderBy('attendant', 'asc').first()
-        const registration = await Registration.create({
-            firstname: data.firstname,
-            lastname: data.lastname,
-            email: data.email,
-            mobile: data.mobile,
-            address: data.address,
-            occupation: data.occupation,
-            marital_status: data.marital_status,
-            country: data.country,
-            has_attended: data.has_attended,
-            your_description: data.your_description,
-            needs_attention: data.needs_attention,
-            nursing_mum: data.nursing_mum,
-            expectations: data.expectations,
-            invited_by: data.invited_by,
-            biblestudy_id: bibleStudyGroup?.study_id,
+        const bibleStudyGroup = await this.prisma.bibleStudyGroup.findFirst({
+            orderBy: [
+                { total_attendant: 'asc' }
+            ]
+        })
+        const registration = await this.prisma.registration.create({
+            data: {
+                firstname: data.firstname,
+                lastname: data.lastname,
+                email: data.email,
+                mobile: data.mobile,
+                address: data.address,
+                occupation: data.occupation,
+                marital_status: data.marital_status,
+                country: data.country,
+                has_attended: data.has_attended,
+                your_description: data.your_description,
+                needs_attention: data.needs_attention,
+                nursing_mum: data.nursing_mum,
+                expectations: data.expectations,
+                invited_by: data.invited_by,
+                biblestudy_id: bibleStudyGroup?.study_id
+            }
         })
 
-        registration.registration_id = `THREG${registration.id}`
-        registration.save()
+         await this.prisma.registration.update({
+            where: { id: registration.id },
+            data: { registration_id: `THREG${registration.id}` }
+        })
+
         if (bibleStudyGroup != null) {
-            bibleStudyGroup.attendant = bibleStudyGroup.attendant += 1
-            bibleStudyGroup.save()
+            console.log(bibleStudyGroup.total_attendant,'assas')
+           await this.prisma.bibleStudyGroup.update({
+                where: { id: bibleStudyGroup.id },
+                data: { total_attendant: bibleStudyGroup.total_attendant + 1 }
+            })
         }
 
-        const res = await mail.send((message) => {
+       await mail.send((message) => {
             message.to(registration.email)
                 .from('threshinghouseteam@gmail.com')
                 .subject('ANBR 2024, Registration')
                 .htmlView('emails/confirm_registration', registration)
         })
-        console.log(res)
+        console.log(registration)
         const response: ApiResponse = {
             status: 200,
             data: registration,
