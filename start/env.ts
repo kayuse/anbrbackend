@@ -30,11 +30,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for configuring database connection
   |----------------------------------------------------------
   */
-  // DB_HOST: Env.schema.string({ format: 'host' }),
-  // DB_PORT: Env.schema.number(),
-  // DB_USER: Env.schema.string(),
-  // DB_PASSWORD: Env.schema.string.optional(),
-  // DB_DATABASE: Env.schema.string(),
+  DB_HOST: Env.schema.string({ format: 'host' }),
+  DB_PORT: Env.schema.number(),
+  DB_USER: Env.schema.string(),
+  DB_PASSWORD: Env.schema.string.optional(),
+  DB_DATABASE: Env.schema.string(),
 
   /*
   |----------------------------------------------------------
@@ -43,6 +43,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   */
   SMTP_HOST: Env.schema.string(),
   SMTP_PORT: Env.schema.string(),
-  // AWS_ACCESS_KEY_ID: Env.schema.string(),
-  // AWS_SECRET_ACCESS_KEY: Env.schema.string()
+  AWS_ACCESS_KEY_ID: Env.schema.string(),
+  AWS_SECRET_ACCESS_KEY: Env.schema.string(),
+  AWS_REGION: Env.schema.string()
 })
