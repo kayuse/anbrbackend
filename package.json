@@ -68,9 +68,7 @@
     "mysql2": "^3.10.1",
     "reflect-metadata": "^0.2.2"
   },
-  "optionalDependencies": {
-       "@rollup/rollup-linux-x64-gnu": "4.9.5"
-  },
+
   "hotHook": {
     "boundaries": [
       "./app/controllers/**/*.ts",
